@@ -25,14 +25,14 @@ app.on('ready', function() {
         if (err) {
             var defaultConfig = {
                 db: {
-                    host: 'localhost',
+                    host: '127.0.0.1',
                     database: 'hos',
                     port: 3306,
                     user: 'sa',
                     password: 'sa'
                 },
                 cloud: {
-                  url: 'http://localhost',
+                  url: 'http://110.164.210.206',
                   port: 3000,
                   user: 'sa',
                   password: 'sa'

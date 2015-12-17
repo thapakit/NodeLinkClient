@@ -145,15 +145,12 @@ angular.module('app.services.Info', [])
 
                 db.raw('set NAMES \'utf8\'', [])
                     .then(function(rows) {
-                        debugger;
                         db('node_accident')
                             .insert(items)
                             .then(function () {
-                                debugger;
                                 q.resolve()
                             })
                             .catch(function (err) {
-                                debugger;
                                 q.reject(err)
                             });
                     })

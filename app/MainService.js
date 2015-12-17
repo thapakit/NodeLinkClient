@@ -30,7 +30,8 @@ angular.module('app.services.Main', [])
                     'inner join patient as p on p.hn=o.hn  ' +
                     'left join er_accident_type as et on et.er_accident_type_id=ed.er_accident_type_id ' +
                     'left join node_accident as na on na.vn=ed.vn ' +
-                    'left join er_nursing_visit_type as ev on ev.visit_type=ed.visit_type where o.vstdate=?';
+                    'left join er_nursing_visit_type as ev on ev.visit_type=ed.visit_type ' +
+                    'where ed.er_accident_type_id is not null and o.vstdate=?';
 
                 //db.raw('set NAMES \'utf8\'', [])
                 //    .then(function(rows) {
@@ -80,6 +81,7 @@ angular.module('app.services.Main', [])
             },
 
             send: function(data) {
+
                 var q = $q.defer();
                 var params = {
                     user: cloudUser,
@@ -90,7 +92,6 @@ angular.module('app.services.Main', [])
                 $http.post(cloudUrl + '/save', params)
                     .success(function(data) {
                         q.resolve();
-                        console.log(data);
                     })
                     .error(function(err) {
                         q.reject(err);
@@ -129,7 +130,7 @@ angular.module('app.services.Main', [])
                     ' p.sex, ' +
                     ' p.birthdate AS dob, ' +
                     '  timestampdiff(year, p.birthdate, v.vstdate) as age, ' +
-                    '  p.patient_hn as hn, v.vn, p.nationality, ' +
+                    '  v.hn, v.vn, p.nationality, ' +
                     '   na.adate, ' +
                     ' na.atime, ' +
                     ' o.vstdate as hdate, ' +
@@ -163,7 +164,6 @@ angular.module('app.services.Main', [])
                     .then(function(rows) {
                         db.raw(sql, [vn])
                             .then(function (rows) {
-                                console.log(rows);
                                 q.resolve(rows[0])
                             })
                             .catch(function (err) {
