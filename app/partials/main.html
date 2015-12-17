@@ -1,0 +1,73 @@
+<ul class="breadcrumb">
+  <li>
+    <a href="#/"> <i class="fa fa-home"></i> หน้าหลัก </a>
+  </li>
+  <li class="active"> Dashboard </li>
+</ul>
+
+<div class="well well-sm">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="form-inline">
+        <label for="">วันที่</label>
+        <input type="date" class="form-control" ng-model="startDate">
+        <button class="btn btn-primary" ng-click="getList()">
+          <i class="fa fa-search"></i> แสดงรายการ
+        </button>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="pull-right">
+        <div class="btn-group">
+          <button class="btn btn-success" ng-click="sendAll()">
+            <i class="fa fa-share"></i> ส่งทั้งหมด
+          </button>
+          <button class="btn btn-default" ng-click="sendSelected()">
+            <i class="fa fa-share-alt"></i> ส่งเฉพาะที่เลือก ({{ selectedTotal | number}})
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ส่ง</th>
+      <th>HN</th>
+      <th>ชื่อ - สกุล</th>
+      <th>เพศ</th>
+      <th>ประเภทการมา</th>
+      <th>Trauma</th>
+      <th>ประเภทอุบัติเหตุ</th>
+      <th>อื่นๆ</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-if="!person.length">
+      <td colspan="9">ไม่พบรายการ</td>
+    </tr>
+    <tr ng-repeat="p in person" ng-if="person.length" ng-class="{'success': p.sendded}">
+      <td>
+        <input type="checkbox" checked="checked" ng-if="p.checked" ng-click="toggleSend(p.vn)">
+        <input type="checkbox" ng-if="!p.checked" ng-click="toggleSend(p.vn)">
+      </td>
+      <td>{{ p.hn }}</td>
+      <td>{{ p.fullname }}</td>
+      <td>{{ p.sex_name }}</td>
+      <td>{{ p.visit_type_name }}</td>
+      <td>{{ p.trauma }}</td>
+      <td>{{ p.accident_type_name }}</td>
+      <td ng-if="p.hasInfo"><i class="fa fa-check-square-o"></i></td>
+      <td ng-if="!p.hasInfo"><i class="fa fa-square-o"></i></td>
+      <td>
+        <a href="#/info/{{ p.vn }}" class="btn btn-primary">
+          <i class="fa fa-edit"></i>
+        </a>
+      </td>
+      <tr>
+  </tbody>
+</table>
