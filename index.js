@@ -58,7 +58,14 @@ app.on('ready', function() {
         event.returnValue = dir;
     });
     // Create the browser window.
-    mainWindow = new BrowserWindow({width: 1010, height: 600});
+    mainWindow = new BrowserWindow({
+        width: 1010,
+        height: 600,
+        icon: 'img/icon.ico'
+        //icon: path.join(__dirname, 'icon.png')
+    });
+
+    mainWindow.maximize();
 
     // and load the index.html of the app.
     mainWindow.loadUrl('file://' + __dirname + '/app/index.html');
