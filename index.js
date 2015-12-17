@@ -62,7 +62,7 @@ app.on('ready', function() {
         width: 1010,
         height: 600,
         icon: 'img/icon.ico'
-        //icon: path.join(__dirname, 'icon.png')
+        //icon: __dirname + '/img/icon.ico'
     });
 
     mainWindow.maximize();
