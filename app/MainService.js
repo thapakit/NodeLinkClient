@@ -31,7 +31,7 @@ angular.module('app.services.Main', [])
                     'left join er_accident_type as et on et.er_accident_type_id=ed.er_accident_type_id ' +
                     'left join node_accident as na on na.vn=ed.vn ' +
                     'left join er_nursing_visit_type as ev on ev.visit_type=ed.visit_type ' +
-                    'where ed.er_accident_type_id is not null and o.vstdate=?';
+                    'where ed.er_accident_type_id is not null and o.vstdate=? order by o.vsttime desc';
 
                 //db.raw('set NAMES \'utf8\'', [])
                 //    .then(function(rows) {
@@ -123,42 +123,99 @@ angular.module('app.services.Main', [])
             getExport: function (vn) {
                 var q = $q.defer();
 
-                var sql = 'SELECT  DISTINCT ' +
-                    '   (SELECT hospitalcode FROM opdconfig) AS hcode,  ' +
-                    '   p.person_id AS pid, ' +
-                    'p.pname as prename, p.fname as firstname, p.lname as lastname, ' +
-                    ' p.sex, ' +
-                    ' p.birthdate AS dob, ' +
-                    '  timestampdiff(year, p.birthdate, v.vstdate) as age, ' +
-                    '  v.hn, v.vn, p.nationality, ' +
-                    '   na.adate, ' +
-                    ' na.atime, ' +
-                    ' o.vstdate as hdate, ' +
-                    ' o.vsttime as htime, ' +
-                    ' "" as ddate,  ' +
-                    ' "" as dtime,  ' +
-                    '  na.acc_prov,  ' +
-                    ' na.acc_amp,  ' +
-                    ' na.acc_tam,   ' +
-                    ' "" as typepass, ' +
-                    'na.vehicle1, ' +
-                    'na.vehicle2, ' +
-                    ' "" as icd10, ' +
-                    'na.road, ' +
-                    'na.road_area, ' +
-                    'na.type_road, ' +
-                    '   "9" AS belt,  ' +
-                    '   "9" AS helmet,  ' +
-                    '      "9" AS alcohol,  ' +
-                    '   IFNULL(r.accident_transport_type_id,99) AS  carry, o.vstdate ' +
-                    '   FROM er_nursing_detail r  ' +
-                    '   inner join ovst o on o.vn=r.vn  ' +
-                    '   inner join vn_stat v on v.vn=r.vn  ' +
-                    '   LEFT OUTER JOIN person p ON v.hn = p.patient_hn  ' +
-                    '   LEFT OUTER JOIN er_regist er ON r.vn =er.vn AND v.vn=er.vn  ' +
-                    '   left outer join node_accident na  on na.vn=o.vn ' +
-                    '   WHERE r.er_accident_type_id IS NOT NULL AND v.vn IS NOT NULL  ' +
-                    'and o.vn in (?)';
+                //var sql = 'SELECT  DISTINCT ' +
+                //    '   (SELECT hospitalcode FROM opdconfig) AS hcode,  ' +
+                //    '   p.person_id AS pid, ' +
+                //    'p.pname as prename, p.fname as firstname, p.lname as lastname, ' +
+                //    ' p.sex, ' +
+                //    ' p.birthdate AS dob, ' +
+                //    '  timestampdiff(year, p.birthdate, v.vstdate) as age, ' +
+                //    '  v.hn, v.vn, p.nationality, ' +
+                //    '   na.adate, ' +
+                //    ' na.atime, ' +
+                //    ' o.vstdate as hdate, ' +
+                //    ' o.vsttime as htime, ' +
+                //    ' "" as ddate,  ' +
+                //    ' "" as dtime,  ' +
+                //    '  na.acc_prov,  ' +
+                //    ' na.acc_amp,  ' +
+                //    ' na.acc_tam,   ' +
+                //    ' "" as typepass, ' +
+                //    'na.vehicle1, ' +
+                //    'na.vehicle2, ' +
+                //    ' "" as icd10, ' +
+                //    'na.road, ' +
+                //    'na.road_area, ' +
+                //    'na.type_road, ' +
+                //    '   "9" AS belt,  ' +
+                //    '   "9" AS helmet,  ' +
+                //    '      "9" AS alcohol,  ' +
+                //    '   IFNULL(r.accident_transport_type_id,99) AS  carry, o.vstdate ' +
+                //    '   FROM er_nursing_detail r  ' +
+                //    '   inner join ovst o on o.vn=r.vn  ' +
+                //    '   inner join vn_stat v on v.vn=r.vn  ' +
+                //    '   LEFT OUTER JOIN person p ON v.hn = p.patient_hn  ' +
+                //    '   LEFT OUTER JOIN er_regist er ON r.vn =er.vn AND v.vn=er.vn  ' +
+                //    '   left outer join node_accident na  on na.vn=o.vn ' +
+                //    '   WHERE r.er_accident_type_id IS NOT NULL AND v.vn IS NOT NULL  ' +
+                //    'and o.vn in (?)';
+
+                var sql =
+                    'SELECT DISTINCT ' +
+                    '( ' +
+                    '    SELECT ' +
+                    '       hospitalcode ' +
+                    '    FROM ' +
+                    '       opdconfig ' +
+                    ')AS hcode, ' +
+                    '    p.person_id AS pid, ' +
+                    'case when p.pname is null then pa.pname else p.pname end AS prename, ' +
+                    'case when p.fname is null then pa.fname else p.fname end AS firstname, ' +
+                    'case when p.lname is null then pa.lname else p.lname end AS lastname, ' +
+                    'case when p.sex is null then pa.sex else p.sex end as sex, ' +
+                    'case when p.birthdate is null then pa.birthday else p.birthdate end AS dob, ' +
+                    '    timestampdiff(YEAR, case when p.birthdate is null then pa.birthday else p.birthdate end, v.vstdate)AS age, ' +
+                    '    v.hn, ' +
+                    '    v.vn, ' +
+                    'case when p.nationality is null then pa.nationality else p.nationality end as nationality, ' +
+                    '    na.adate, ' +
+                    '    na.atime, ' +
+                    '    o.vstdate AS hdate, ' +
+                    '    o.vsttime AS htime, ' +
+                    '    "" AS ddate, ' +
+                    '    "" AS dtime, ' +
+                    '    na.acc_prov, ' +
+                    '    na.acc_amp, ' +
+                    '    na.acc_tam, ' +
+                    '    "" AS typepass, ' +
+                    '    na.vehicle1, ' +
+                    '    na.vehicle2, ' +
+                    '    "" AS icd10, ' +
+                    '    na.road, ' +
+                    '    na.road_area, ' +
+                    '    na.type_road, ' +
+                    '    "9" AS belt, ' +
+                    '    "9" AS helmet, ' +
+                    '    "9" AS alcohol, ' +
+                    '    IFNULL( ' +
+                    '        r.accident_transport_type_id, ' +
+                    '        99 ' +
+                    '    )AS carry, ' +
+                    '    o.vstdate, ' +
+                    '    r.trauma ' +
+                    'FROM ' +
+                    'er_nursing_detail r ' +
+                    'INNER JOIN ovst o ON o.vn = r.vn ' +
+                    'INNER JOIN vn_stat v ON v.vn = r.vn ' +
+                    'LEFT OUTER JOIN person p ON v.hn = p.patient_hn ' +
+                    'LEFT JOIN patient as pa on v.hn=pa.hn ' +
+                    'LEFT OUTER JOIN er_regist er ON r.vn = er.vn ' +
+                    'AND v.vn = er.vn ' +
+                    'LEFT OUTER JOIN node_accident na ON na.vn = o.vn ' +
+                    'WHERE ' +
+                    'r.er_accident_type_id IS NOT NULL ' +
+                    'AND v.vn IS NOT NULL ' +
+                    'AND o.vn IN(?)';
 
                 db.raw('set NAMES \'utf8\'', [])
                     .then(function(rows) {

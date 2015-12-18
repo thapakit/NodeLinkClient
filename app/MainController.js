@@ -143,6 +143,7 @@ angular.module('app.controllers.Main', ['app.services.Main'])
                                     obj.vehicle2 = v.vehicle2;
                                     obj.vn = v.vn;
                                     obj.vstdate = v.vstdate ? moment(v.vstdate).format('x') : '';
+                                    obj.trauma = v.trauma;
 
                                     person.push(obj);
                                 })
@@ -214,6 +215,7 @@ angular.module('app.controllers.Main', ['app.services.Main'])
                                     obj.vehicle2 = v.vehicle2;
                                     obj.vn = v.vn;
                                     obj.vstdate = v.vstdate ? moment(v.vstdate).format('x') : '';
+                                    obj.trauma = v.trauma;
                                     person.push(obj);
                                 })
 
